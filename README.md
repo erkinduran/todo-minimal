@@ -68,3 +68,8 @@ npx prisma studio
 ```
 npm i --save @next-auth/prisma-adapter
 ```
+
+### run dev server
+```
+npm run dev
+```
