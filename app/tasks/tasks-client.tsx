@@ -1,5 +1,6 @@
 "use client";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
+import {debounce} from "lodash";
 
 type Task = { id: string; title: string; done: boolean; createdAt: string };
 type Page = { items: Task[]; page: number; pageSize: number; total: number; totalPages: number };
@@ -13,16 +14,21 @@ export default function TasksClient() {
     const [title, setTitle] = useState("");
     const [loading, setLoading] = useState(false);
 
-    async function load() {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const load = useCallback(debounce(async () => {
         setLoading(true);
         const res = await fetch(`/api/tasks?q=${encodeURIComponent(q)}&page=${page}&pageSize=${pageSize}`, {cache: "no-store"});
         if (res.ok) setData(await res.json());
         setLoading(false);
-    }
+    }, 300), [q, page, pageSize]);
 
     useEffect(() => {
         load();
-    }, [q, page]);
+
+        return () => {
+            load.cancel();
+        }
+    }, [load]);
 
     async function createTask(e: React.FormEvent) {
         e.preventDefault();
