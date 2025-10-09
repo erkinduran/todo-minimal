@@ -6,12 +6,16 @@ import {Bars3Icon, XMarkIcon,} from '@heroicons/react/24/outline'
 import MarkLogo from '@/assets/mark.svg'
 import {signOut, useSession} from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
+import UserIcon from "@/assets/user-icon.svg";
 
 export default function Header() {
     const session = useSession();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    if(session.status === 'loading' || session.status === 'unauthenticated') return null;
+    if (session.status === 'loading' || session.status === 'unauthenticated') return null;
+
+    const user = session?.data?.user;
 
     const handleLogout = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
@@ -60,15 +64,32 @@ export default function Header() {
                     </Link>
                 </div>
 
-                {session.status === 'authenticated' && <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                    <a
-                        href="#"
-                        className="text-sm/6 font-semibold text-gray-900"
-                        onClick={handleLogout}
-                    >
-                        Logout <span aria-hidden="true">&rarr;</span>
-                    </a>
-                </div>}
+                <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+                    <div className="flex items-center gap-x-2">
+                        <div className="w-10 h-10 rounded-full bg-Gray-200 flex items-center justify-center">
+                            {user?.image ? <Image
+                                src={user?.image}
+                                width={40}
+                                height={40}
+                                alt="avatar"
+                                className="rounded-full"
+                            /> : <UserIcon />}
+                        </div>
+                        <span className="text-black font-semibold">
+                            {user?.name}
+                        </span>
+                    </div>
+
+                    <div className="flex items-center gap-x-2 ml-6">
+                        <a
+                            href="#"
+                            className="text-sm/6 font-semibold text-gray-900"
+                            onClick={handleLogout}
+                        >
+                            Logout <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </div>
+                </div>
             </nav>
             <Dialog
                 open={mobileMenuOpen}
@@ -111,7 +132,7 @@ export default function Header() {
                                     Home
                                 </Link>
                             </div>
-                            {session.status === 'authenticated' && <div className="py-6">
+                            <div className="py-6">
                                 <a
                                     href="#"
                                     className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
@@ -119,7 +140,7 @@ export default function Header() {
                                 >
                                     Logout
                                 </a>
-                            </div>}
+                            </div>
                         </div>
                     </div>
                 </DialogPanel>
