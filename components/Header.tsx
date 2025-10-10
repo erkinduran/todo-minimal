@@ -13,9 +13,7 @@ export default function Header() {
     const session = useSession();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    if (session.status === 'loading' || session.status === 'unauthenticated') return null;
-
-    const user = session?.data?.user;
+    const user = session?.data?.user ?? null;
 
     const handleLogout = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
@@ -65,7 +63,7 @@ export default function Header() {
                 </div>
 
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                    <div className="flex items-center gap-x-2">
+                    {user ? <div className="flex items-center gap-x-2">
                         <div className="w-10 h-10 rounded-full bg-Gray-200 flex items-center justify-center">
                             {user?.image ? <Image
                                 src={user?.image}
@@ -78,7 +76,7 @@ export default function Header() {
                         <span className="text-black font-semibold">
                             {user?.name}
                         </span>
-                    </div>
+                    </div>: <div className="flex items-center gap-x-2 animate">Loading...</div>}
 
                     <div className="flex items-center gap-x-2 ml-6">
                         <a
